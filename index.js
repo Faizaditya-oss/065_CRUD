@@ -30,3 +30,16 @@ app.get('/', (req, res) => {
     });
   
 });
+// METHOD POST: Menambahkan data baru
+app.post('/', async (req, res) => {
+    try {
+        const { nama, nim, kelas } = req.body;
+        const query = 'INSERT INTO biodata (nama, nim, kelas) VALUES ($1, $2, $3) RETURNING *';
+        const result = await pool.query(query, [nama, nim, kelas]);
+        res.status(201).json({ message: "Data berhasil ditambahkan", data: result.rows[0] });
+    } catch (err) {
+        console.error("Error executing query", err.stack);
+        res.status(500).send("Database error");
+    }
+});
+
