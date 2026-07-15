@@ -42,4 +42,23 @@ app.post('/', async (req, res) => {
         res.status(500).send("Database error");
     }
 });
+// METHOD PUT: Mengubah data berdasarkan ID
+app.put('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nama, nim, kelas } = req.body;
+        //Parameter Query.
+        const query = 'UPDATE biodata SET nama = $1, nim = $2, kelas = $3 WHERE id = $4 RETURNING *';
+        const result = await pool.query(query, [nama, nim, kelas, id]);
+        
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "Data tidak ditemukan" });
+        }
+        res.json({ message: "Data berhasil diupdate", data: result.rows[0] });
+    } catch (err) {
+        console.error("Error executing query", err.stack);
+        res.status(500).send("Database error");
+    }
+});
+
 
