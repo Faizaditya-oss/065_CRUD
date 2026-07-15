@@ -61,4 +61,21 @@ app.put('/:id', async (req, res) => {
     }
 });
 
+// METHOD DELETE: Menghapus data berdasarkan ID
+app.delete('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const query = 'DELETE FROM biodata WHERE id = $1 RETURNING *';
+        const result = await pool.query(query, [id]);
+        
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "Data tidak ditemukan" });
+        }
+        res.json({ message: "Data berhasil dihapus", data: result.rows[0] });
+    } catch (err) {
+        console.error("Error executing query", err.stack);
+        res.status(500).send("Database error");
+    }
+});
+
 
